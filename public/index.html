@@ -11,87 +11,27 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="Framecut 首頁">
-      <span class="brand-mark"><i></i><i></i></span>
-      FRAMECUT
-    </a>
-    <span class="top-note">YOUTUBE CLIP TOOL</span>
-  </header>
-
+  <header class="topbar"><a class="brand" href="/"><span class="brand-mark"><i></i><i></i></span>FRAMECUT</a><span class="top-note">LOCAL YOUTUBE CLIP TOOL</span></header>
   <main>
-    <section class="hero">
-      <div class="eyebrow"><span></span> 精準選取你需要的畫面</div>
-      <h1>剪下這一刻。<br><em>留下想看的部分。</em></h1>
-      <p>貼上 YouTube 連結、選擇起訖時間，立即預覽並下載你的影片片段。</p>
-    </section>
-
+    <section class="hero"><div class="eyebrow"><span></span> 精準選取你需要的畫面</div><h1>剪下這一刻。<br><em>留下想看的部分。</em></h1><p>貼上 YouTube 連結、選擇起訖時間，立即預覽並下載影片片段。</p></section>
     <section class="workspace" aria-label="影片剪輯工具">
-      <div class="url-row">
-        <label for="url">YOUTUBE URL</label>
-        <div class="url-control">
-          <input id="url" type="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
-          <button id="load" type="button">載入影片 <span>↗</span></button>
-        </div>
-        <p id="url-error" class="field-error" role="alert"></p>
-      </div>
-
+      <div class="url-row"><label for="url">YOUTUBE URL</label><div class="url-control"><input id="url" type="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off"><button id="load" type="button">載入影片 <span>↗</span></button></div><p id="url-error" class="field-error" role="alert"></p></div>
       <div class="editor">
-        <div class="preview-panel">
-          <div id="empty-state" class="empty-state">
-            <div class="play-glyph"><span></span></div>
-            <p>影片預覽會顯示在這裡</p>
-            <small>貼上連結後按下「載入影片」</small>
-          </div>
-          <div id="player" class="player"></div>
-        </div>
-
+        <div class="preview-panel"><div id="empty-state" class="empty-state"><div class="play-glyph"><span></span></div><p>影片預覽會顯示在這裡</p><small>貼上連結後按下「載入影片」</small></div><div id="player" class="player"></div></div>
         <aside class="controls-panel">
-          <div class="section-heading">
-            <span>01</span>
-            <div><h2>選取片段</h2><p>SELECT YOUR RANGE</p></div>
-          </div>
-
-          <div class="time-grid">
-            <div class="time-field">
-              <label for="start-time">開始時間</label>
-              <div class="time-input"><input id="start-time" value="00:00" inputmode="numeric"><button id="set-start" title="使用目前播放時間">◎</button></div>
-            </div>
-            <div class="time-field">
-              <label for="end-time">結束時間</label>
-              <div class="time-input"><input id="end-time" value="00:00" inputmode="numeric"><button id="set-end" title="使用目前播放時間">◎</button></div>
-            </div>
-          </div>
-
-          <div class="range-wrap">
-            <div id="range-track" class="range-track"><div id="range-fill" class="range-fill"></div></div>
-            <input id="start-range" class="range range-start" type="range" min="0" max="100" value="0" step="0.1">
-            <input id="end-range" class="range range-end" type="range" min="0" max="100" value="100" step="0.1">
-            <div class="range-labels"><span>00:00</span><span id="duration-label">--:--</span></div>
-          </div>
-
-          <div class="clip-summary">
-            <span>片段長度</span>
-            <strong id="clip-duration">00:00</strong>
-          </div>
-
-          <button id="preview" class="preview-button" type="button" disabled><span>▶</span> 預覽選取片段</button>
+          <div class="section-heading"><span>01</span><div><h2>選取片段</h2><p>SELECT YOUR RANGE</p></div></div>
+          <div class="time-grid"><div class="time-field"><label for="start-time">開始時間</label><div class="time-input"><input id="start-time" value="00:00"><button id="set-start" title="使用目前播放時間">◎</button></div></div><div class="time-field"><label for="end-time">結束時間</label><div class="time-input"><input id="end-time" value="00:00"><button id="set-end" title="使用目前播放時間">◎</button></div></div></div>
+          <div class="range-wrap"><div class="range-track"><div id="range-fill" class="range-fill"></div></div><input id="start-range" class="range range-start" type="range" min="0" max="100" value="0" step="0.1"><input id="end-range" class="range range-end" type="range" min="0" max="100" value="100" step="0.1"><div class="range-labels"><span>00:00</span><span id="duration-label">--:--</span></div></div>
+          <div class="clip-summary"><span>片段長度</span><strong id="clip-duration">00:00</strong></div><button id="preview" class="preview-button" disabled><span>▶</span> 預覽選取片段</button>
         </aside>
       </div>
-
-      <div class="download-row">
-        <div class="legal-note"><span>i</span><p>請僅下載你擁有權利或已獲授權使用的內容。</p></div>
-        <button id="download" class="download-button" type="button" disabled>
-          <span class="download-icon">↓</span>
-          <span><b>下載 MP4 片段</b><small id="download-meta">等待載入影片</small></span>
-        </button>
-      </div>
+      <div id="progress-panel" class="progress-panel" hidden><div class="progress-top"><div><span class="progress-label">處理進度</span><strong id="progress-stage">準備中</strong></div><b id="progress-percent">0%</b></div><div class="progress-track"><div id="progress-bar"></div></div></div>
+      <div class="download-row"><div class="legal-note"><span>i</span><p>請僅下載你擁有權利或已獲授權使用的內容。</p></div><button id="download" class="download-button" disabled><span class="download-icon">↓</span><span><b>下載 MP4 片段</b><small id="download-meta">等待載入影片</small></span></button></div>
       <div id="status" class="status" role="status" aria-live="polite"></div>
     </section>
+    <section class="history-section"><div class="history-heading"><div><span>02</span><h2>下載歷史</h2></div><button id="clear-history" type="button">清除紀錄</button></div><div id="history-list" class="history-list"></div></section>
   </main>
-
-  <footer><span>FRAMECUT / 2026</span><span>FAST. SIMPLE. PRECISE.</span></footer>
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="/app.js"></script>
+  <footer><span>FRAMECUT / LOCAL</span><span>FAST. SIMPLE. PRECISE.</span></footer>
+  <script src="https://www.youtube.com/iframe_api"></script><script src="/app.js"></script>
 </body>
 </html>
