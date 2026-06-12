@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: framecut-youtube-clipper
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
