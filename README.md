@@ -1,36 +1,19 @@
-# Framecut
+# Framecut 本機版
 
-YouTube 影片預覽與片段下載工具。請僅下載你擁有權利或已獲授權使用的內容，並遵守 YouTube 服務條款。
+在本機播放 YouTube、選擇開始與結束時間並下載 MP4 片段。一般公開影片會直接使用你的本機網路；私人、會員或年齡限制影片會嘗試讀取已登入的 Chrome cookies。
 
-## 需求
+## 使用方式
 
-- Node.js 18+
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp#installation)
-- [ffmpeg](https://ffmpeg.org/download.html)，且兩者都可由終端機直接執行
+雙擊 `start-local.cmd`，瀏覽器會自動開啟：
 
-Windows 可使用：
+`http://127.0.0.1:3000`
 
-```powershell
-winget install yt-dlp.yt-dlp
-winget install Gyan.FFmpeg
-```
+## Chrome 登入影片
 
-## 啟動
+1. 先在 Chrome 登入 YouTube，確認影片可正常播放。
+2. 完全關閉所有 Chrome 視窗。
+3. 重新按下載。
 
-```powershell
-cd youtube-clipper
-npm.cmd start
-```
+Chrome 執行中會鎖定 cookie 資料庫，因此受限影片需要暫時關閉 Chrome。一般公開影片不受影響。
 
-瀏覽器開啟 `http://localhost:3000`。
-
-## Render 部署
-
-專案包含 `Dockerfile` 與 `render.yaml`。連結 GitHub repository 後，可在 Render 使用 Blueprint 建立服務；Docker 映像會自動安裝 `yt-dlp` 與 `ffmpeg`。
-
-若 `yt-dlp.exe` 不在 PATH，可設定 `YT_DLP_PATH`：
-
-```powershell
-$env:YT_DLP_PATH = "C:\tools\yt-dlp.exe"
-npm.cmd start
-```
+請僅下載你擁有權利或已獲授權使用的內容。
