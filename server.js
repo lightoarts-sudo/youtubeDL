@@ -77,11 +77,26 @@ function updateJob(jobId, patch) {
   jobs.set(jobId, { ...(jobs.get(jobId) || {}), ...patch, updatedAt: Date.now() });
 }
 
-function runYtDlp(args, jobId) {
+function terminateProcessTree(pid) {
+  if (!pid) return;
+  if (process.platform === "win32") {
+    spawn("taskkill", ["/PID", String(pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
+    return;
+  }
+  try { process.kill(-pid, "SIGKILL"); } catch {}
+}
+
+function runYtDlp(args, jobId, onSpawn) {
   return new Promise((resolve) => {
-    const child = spawn(YT_DLP, args, { windowsHide: true });
+    const child = spawn(YT_DLP, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+    onSpawn?.(child);
     let stdout = "";
     let stderr = "";
+    let settled = false;
+    const timeout = setTimeout(() => {
+      stderr += "\nERROR: Framecut processing timed out after 30 minutes.";
+      terminateProcessTree(child.pid);
+    }, 30 * 60 * 1000);
     const inspectProgress = (data) => {
       const text = data.toString();
       const match = text.match(/\[download\]\s+([\d.]+)%/);
@@ -90,8 +105,14 @@ function runYtDlp(args, jobId) {
     };
     child.stdout.on("data", (data) => { stdout += data; inspectProgress(data); });
     child.stderr.on("data", (data) => { stderr += data; inspectProgress(data); });
-    child.on("error", (error) => resolve({ code: -1, stdout, stderr, error }));
-    child.on("close", (code) => resolve({ code, stdout, stderr }));
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      resolve(result);
+    };
+    child.on("error", (error) => finish({ code: -1, stdout, stderr, error }));
+    child.on("close", (code) => finish({ code, stdout, stderr }));
   });
 }
 
@@ -143,6 +164,7 @@ async function downloadClip(req, res) {
     "--force-keyframes-at-cuts",
     "--merge-output-format", "mp4",
     "--format", "bv*+ba/b",
+    "--js-runtimes", "node",
     "--output", outputTemplate,
     "--print", "after_move:filepath",
     url,
@@ -153,12 +175,23 @@ async function downloadClip(req, res) {
     return fs.promises.rm(jobDir, { recursive: true, force: true }).catch(() => {});
   };
 
+  let currentChild = null;
+  let clientDisconnected = false;
+  res.on("close", () => {
+    if (res.writableEnded) return;
+    clientDisconnected = true;
+    terminateProcessTree(currentChild?.pid);
+    cleanup();
+  });
+
   updateJob(jobId, { stage: "連線至 YouTube", percent: 10 });
-  let result = await runYtDlp(baseArgs, jobId);
+  let result = await runYtDlp(baseArgs, jobId, (child) => { currentChild = child; });
+  if (clientDisconnected) return;
   const needsLogin = /sign in|not a bot|private video|members-only|age-restricted/i.test(result.stderr);
   if (result.code !== 0 && needsLogin) {
     updateJob(jobId, { stage: "使用 Chrome 登入狀態重試", percent: 12 });
-    result = await runYtDlp(["--cookies-from-browser", "chrome", ...baseArgs], jobId);
+    result = await runYtDlp(["--cookies-from-browser", "chrome", ...baseArgs], jobId, (child) => { currentChild = child; });
+    if (clientDisconnected) return;
   }
 
   if (result.code !== 0) {
